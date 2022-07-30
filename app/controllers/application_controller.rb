@@ -10,7 +10,11 @@ class ApplicationController < Sinatra::Base
 
   post '/coffees' do
     coffee = Coffee.create(name: params[:name], price: params[:price], description: params[:description])
-    coffee.to_json
+    if coffee
+      coffee.to_json
+    else
+      {message: "Something went wrong! Try again"}
+    end
   end
 
   post '/login' do
@@ -22,7 +26,7 @@ class ApplicationController < Sinatra::Base
         return {message: "Account does not exist"}.to_json
       end
       if user && user.password != params[:password]
-        return {"Wrong password/email."}.to_json
+        return {message: "Wrong password/email."}.to_json
       end
       user = {
       id: user.id,
@@ -53,13 +57,22 @@ class ApplicationController < Sinatra::Base
     {user: user}.to_json
   end
 
-  post '/orders/:user_id/:coffee_id' do
-    review = Review.create(
+  get '/users/:user_id/orders' do
+    user = User.find_by(id: params[:user_id])
+    if user
+      user.to_json(include: :orders)
+    else
+      {message: "Problem fetching orders"}
+    end
+  end
+
+  post '/orders' do
+    order = Order.create(
       amount: params[:amount],
       user_id: params[:user_id],
-      coffee_id: params[:coffee_id]
+      order: params[:order]
     )
-    review.to_json
+    order.to_json
   end
 
 end

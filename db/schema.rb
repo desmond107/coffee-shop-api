@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(version: 2022_07_30_102848) do
   create_table "orders", force: :cascade do |t|
     t.float "amount"
     t.integer "user_id"
-    t.integer "coffee_id"
+    t.string "order", default: [], array: true
   end
 
   create_table "users", force: :cascade do |t|
